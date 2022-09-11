@@ -220,12 +220,12 @@ impl eframe::App for App {
                         if ui.button("Grid: Invisible").clicked() {
                             self.grid_status = GridStatus::Off;
                         }
-                        ui.add(Slider::new(&mut self.grid_size,  7.5..=30.).text("grid size"));
+                        ui.add(Slider::new(&mut self.grid_size, 7.5..=30.).text("grid size"));
                     }
                     GridStatus::Off => {
                         self.grid_size = 1.;
                         if ui.button("Grid: Off").clicked() {
-                            self.grid_size = 15.;
+                            self.grid_size = 21.;
                             self.grid_status = GridStatus::OnAndVisible;
                         }
                     }
@@ -278,7 +278,6 @@ impl eframe::App for App {
                     });
                 }
             }
-
             if ui.input().key_down(Key::P) {
                 if self.input.p {
                     let pos = ui.input().pointer.hover_pos();
@@ -311,7 +310,7 @@ impl eframe::App for App {
                         match self.curr_path {
                             None => {
                                 self.curr_path = Some(0);
-                            },
+                            }
                             Some(curr_path) => {
                                 self.curr_path = Some(curr_path + 1);
                             }
@@ -349,13 +348,18 @@ impl eframe::App for App {
             if let Some(pos) = { ctx.input().pointer.hover_pos() } {
                 let mut i = -1f32;
                 while i < 2. {
-                    if clicked_move_circle(self, pos, i * (self.max.x - self.min.x)) || self.move_path {
+                    if clicked_move_circle(self, pos, i * (self.max.x - self.min.x))
+                        || self.move_path
+                    {
                         cursor_icon = CursorIcon::AllScroll;
-                    } else if clicked_w_circle(self, pos, i * (self.max.x - self.min.x)) || self.adjust_w != 0 {
+                    } else if clicked_w_circle(self, pos, i * (self.max.x - self.min.x))
+                        || self.adjust_w != 0
+                    {
                         cursor_icon = CursorIcon::ResizeHorizontal;
-                    } else if clicked_h_circle(self, pos, i * (self.max.x - self.min.x)) || self.adjust_h {
+                    } else if clicked_h_circle(self, pos, i * (self.max.x - self.min.x))
+                        || self.adjust_h
+                    {
                         cursor_icon = CursorIcon::ResizeVertical;
-
                     } else {
                     }
                     i += 1.;
@@ -372,12 +376,21 @@ impl eframe::App for App {
                                 // println!("{}", clicked_path(self, pos));
                                 let mut i = -1f32;
                                 while i < 2. {
-                                    if clicked_move_circle(self, pos, i * (self.max.x - self.min.x)) {
+                                    if clicked_move_circle(self, pos, i * (self.max.x - self.min.x))
+                                    {
                                         self.move_path = true;
                                         break;
-                                    } else if clicked_w_circle(self, pos, i * (self.max.x - self.min.x)) {
+                                    } else if clicked_w_circle(
+                                        self,
+                                        pos,
+                                        i * (self.max.x - self.min.x),
+                                    ) {
                                         self.adjust_w = 1 - i as i8;
-                                    } else if clicked_h_circle(self, pos, i * (self.max.x - self.min.x)) {
+                                    } else if clicked_h_circle(
+                                        self,
+                                        pos,
+                                        i * (self.max.x - self.min.x),
+                                    ) {
                                         self.adjust_h = true;
                                     } else {
                                         // self.click = click_pos;
@@ -389,7 +402,8 @@ impl eframe::App for App {
                                     let mut i = -1f32;
                                     let mut all_found_paths = [None, None, None];
                                     while i < 2. {
-                                        let new_path = clicked_path(self, pos, i * (self.max.x - self.min.x));
+                                        let new_path =
+                                            clicked_path(self, pos, i * (self.max.x - self.min.x));
                                         if new_path != self.curr_path && !new_path.is_none() {
                                             all_found_paths[(i + 1.) as usize] = new_path;
                                         } else {
@@ -427,10 +441,10 @@ impl eframe::App for App {
                                 //         + self.grid_size / 2.;
                                 // }
                                 self.input.click = false;
-                            } 
-                        } else {
-                                self.input.click = false;
                             }
+                        } else {
+                            self.input.click = false;
+                        }
                     }
                 }
             } else {
@@ -474,7 +488,8 @@ impl eframe::App for App {
                                 p.w = -p.x + pos.x
                                     - (pos.x - 20. + self.grid_size / 2.) % self.grid_size
                                     + self.grid_size / 2.
-                                    - p.h / 2. * p.hori as u8 as f32 * p.rnd_end2 as u8 as f32 + (self.adjust_w - 1) as f32 * (self.max.x - self.min.x);
+                                    - p.h / 2. * p.hori as u8 as f32 * p.rnd_end2 as u8 as f32
+                                    + (self.adjust_w - 1) as f32 * (self.max.x - self.min.x);
                                 if p.w < 10. {
                                     p.w = 10.
                                 }
@@ -531,20 +546,20 @@ fn draw(app: &App, ui: &Ui) {
         GridStatus::OnAndVisible => draw_grid(app.min, app.max, app, &painter),
         _ => (),
     }
+    for j in 1..=10 {
     let mut i = -1f32;
-    while i <= 1. {
-        for j in 1..=10 {
+        while i <= 1. {
             for p in &app.paths {
                 if j == p.layer {
                     // if i == 0. {
-                        // draw_path(&painter, p, app);
+                    // draw_path(&painter, p, app);
                     // } else {
-                        draw_offset_path(app, &painter, p, i * (app.max.x - app.min.x));
+                    draw_offset_path(app, &painter, p, i * (app.max.x - app.min.x));
                     // }
                 }
             }
-        }
         i += 1.;
+        }
     }
     let mut i = -1f32;
     match app.curr_path {
@@ -552,7 +567,12 @@ fn draw(app: &App, ui: &Ui) {
         Some(curr_path) => {
             while i <= 1. {
                 draw_outline(&painter, &app.paths[curr_path], i * (app.max.x - app.min.x));
-                draw_offset_path(app, &painter, &app.paths[curr_path], i * (app.max.x - app.min.x));
+                draw_offset_path(
+                    app,
+                    &painter,
+                    &app.paths[curr_path],
+                    i * (app.max.x - app.min.x),
+                );
                 // draw move circle
                 painter.circle_filled(
                     Pos2 {
